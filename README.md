@@ -1,25 +1,42 @@
 # nway_sofia
+
 Optimized SIP Protection for FreeSWITCH with NIP: Enhanced Security on CentOS 7, openEuler 2403, and Debian 12
-Overview
+## Overview
+
 Over the years, we have released various NIP (Nway IP Protection)-based SIP security solutions, including kernel-level protection, OpenSER, and FreeSWITCH integrations. After receiving substantial feedback from our users, we’ve found that the most widely appreciated and effective solution is directly integrating a module into FreeSWITCH. Therefore, we’ve further optimized the SIP protection module to better prevent scanning, fraud, and abuse, offering a comprehensive solution that strengthens your FreeSWITCH deployment.
 
 This article will guide you through the optimized SIP protection module for FreeSWITCH, explaining how to configure it on CentOS 7, openEuler 2403, and Debian 12. We will also cover how to use the new features to enhance the security of your communication system.
 
 New Features and Configuration for the Optimized SIP Protection Module
+
+```
+cp libnway_auth_lib.so /usr/lib/.
+cp mod_sofia /usr/local/freeswitch/mod/.
+```
+
 1. New Configuration Options
 To further optimize protection, we have introduced several new configuration options in the FreeSWITCH configuration files. These new parameters allow for more granular control over IP blacklists, whitelists, region-based filtering, and User-Agent blacklisting. These options give you the flexibility to fine-tune your security settings. Below are the new configuration options:
+sofia.conf.xml
+```
+ <global_settings>
+    <!-- New custom parameters for enhanced security -->
+    <param name="custom_white_ip_file" value="/usr/local/freeswitch/conf/nway/custom_white_ip.txt"/>
+    <param name="ip_black_file"        value="/usr/local/freeswitch/conf/nway/ip_black.txt"/>
+    <param name="region_white_ip_file" value="/usr/local/freeswitch/conf/nway/region_white_ip.txt"/>
+    <param name="src_blacklist_file"   value="/usr/local/freeswitch/conf/nway/src_black.txt"/>
+    <param name="dst_blacklist_file"   value="/usr/local/freeswitch/conf/nway/dst_black.txt"/>
+    <param name="ua_black_file"        value="/usr/local/freeswitch/conf/nway/ua_black.txt"/>
+    <param name="allow_ua_empty"        value="false"/>
+    <param name="nip_debug"        value="false"/>
+    <param name="license_file"        value="/opt/nway/licenses/sofia.txt"/>
 
-<!-- New custom parameters for enhanced security -->
-<param name="custom_white_ip_file" value="/usr/local/freeswitch/conf/nway/custom_white_ip.txt"/>
-<param name="ip_black_file"        value="/usr/local/freeswitch/conf/nway/ip_black.txt"/>
-<param name="region_white_ip_file" value="/usr/local/freeswitch/conf/nway/region_white_ip.txt"/>
-<param name="src_blacklist_file"   value="/usr/local/freeswitch/conf/nway/src_black.txt"/>
-<param name="dst_blacklist_file"   value="/usr/local/freeswitch/conf/nway/dst_black.txt"/>
-<param name="ua_black_file"        value="/usr/local/freeswitch/conf/nway/ua_black.txt"/>
 <!-- ... End of custom definitions -->
+  </global_settings>
+```
 You can modify these files to store IP blacklists, whitelists, and User-Agent blacklist information. The module will match incoming requests against these files to determine whether to allow or block them.
 
 2. IP Processing Priority
+
 To ensure accurate protection, we have defined an IP processing priority order. Based on the configuration, the system checks the incoming IP and related information in the following order:
 
 Custom Whitelist: The system first checks if the request IP is in the custom whitelist.
@@ -31,21 +48,30 @@ Region Whitelist: If the IP is not in the blacklist, it checks the region whitel
 Default Action: By default, IPs not matching any of the lists are considered blacklisted.
 
 3. IP Matching Examples
+
 In real-world use, you can define these blacklists and whitelists using CIDR ranges or specific IP addresses. For example:
+
+```
 10.0.0.0/8
 172.16.0.0/12
 192.168.0.0/16
 127.0.0.0/8
 169.254.0.0/16
 139.64.8.65
+```
+
 These rules give you the flexibility to manage internal networks, local networks, or specific IP addresses that require access. By adjusting the CIDR ranges or specifying specific IPs, you can control which addresses are allowed or denied access to your FreeSWITCH system.
 
 4. Configuring Caller and Called Numbers
 Beyond IP addresses, the module allows you to configure specific caller and called numbers to provide additional protection. This helps prevent misuse of certain phone numbers. Below is an example of such configuration:
+
+```
 110*
 1000
 ???86
 *99
+```
+
 In this configuration:
 
 * represents one or more characters.
@@ -56,10 +82,14 @@ This allows for granular control over which numbers are protected and which are 
 
 5. Configuring User-Agent Blacklist
 To prevent malicious devices or non-compliant devices from registering, we have added support for configuring a User-Agent blacklist. Here are some example User-Agent patterns:
+
+```
 mic
 tmd.*
 badua.*
 Cisco.*
+```
+
 These blacklist rules allow you to block requests from known malicious User-Agents, devices, or emulators, thus preventing abuse and security threats.
 
 Core Features and Advantages of the Optimized SIP Protection Module
