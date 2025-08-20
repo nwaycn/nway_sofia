@@ -1,6 +1,7 @@
 # nway_sofia
 
-##Contact : wechat 18621575908
+## Contact : wechat 18621575908
+## Email: 1354608370@qq.com
 
 Optimized SIP Protection for FreeSWITCH with NIP: Enhanced Security on CentOS 7, openEuler 2403, and Debian 12
 ## Overview
